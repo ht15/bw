@@ -12,6 +12,8 @@ SET( BW_SOURCE_DIR ${CMAKE_SOURCE_DIR} )
 # Set serach location for CMake include files
 SET( CMAKE_MODULE_PATH "${BW_SOURCE_DIR}/build/cmake" )
 
+SET( BW_CMAKE_TARGET server )
+SET( CMAKE_CXX_FLAGS "-std=c++11" )
 # Ensure the BW_CMAKE_TARGET has been set
 IF( NOT BW_CMAKE_TARGET )
 	MESSAGE( FATAL_ERROR "BW_CMAKE_TARGET is not set, either configure CMake by running bigworld/src/build/bigworld_cmake.bat or specify BW_CMAKE_TARGET when invoking CMake." )
@@ -38,6 +40,8 @@ INCLUDE( BWMacros )
 
 # Include Server Verification setup
 INCLUDE( BWVerifyServer )
+SET( BW_IS_REMOTE_ONLY ON )
+SET( BW_REMOTE_PLATFORM "el7" )
 
 # Determine platform
 IF( BW_IS_REMOTE_ONLY )
@@ -79,7 +83,7 @@ ELSEIF( MSVC14 )
 	# Ignore complaints about targeting Windows XP
 	SET( CMAKE_VS_GLOBALS ${CMAKE_GLOBAL_VARIABLES} "XPDeprecationWarning=false" )
 ELSE()
-	MESSAGE( FATAL_ERROR "Compiler '${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}' not currently supported by BigWorld." )
+	MESSAGE( STATUS "Compiler '${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}' not currently supported by BigWorld." )
 ENDIF()
 
 MESSAGE( STATUS "Compiler: ${BW_COMPILER_TOKEN}" )
@@ -207,9 +211,9 @@ ARRAY2D_BEGIN_LOOP( _islooping "${BW_LIBRARY_PROJECTS}" 2 "libname;libpath" )
 		
 		# Prevent libraries from being part of the remote build, as
 		# dependencies are handled by the remote build
-		IF ( BW_IS_REMOTE_ONLY )
-			SET_TARGET_PROPERTIES( ${libname} PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1 )
-		ENDIF()
+#		IF ( BW_IS_REMOTE_ONLY )
+#			SET_TARGET_PROPERTIES( ${libname} PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1 )
+#		ENDIF()
 		
 		ARRAY2D_ADVANCE()
 	ENDWHILE()
@@ -225,8 +229,8 @@ ARRAY2D_BEGIN_LOOP( _islooping "${BW_BINARY_PROJECTS}" 2 "projname;projpath" )
 		IF ( BW_IS_REMOTE_ONLY )
 			# Prevent libraries from being part of the remote build, as
 			# dependencies are handled by the remote build
-			SET_TARGET_PROPERTIES( ${projname} PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1 )
-		ELSE()
+#			SET_TARGET_PROPERTIES( ${projname} PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1 )
+#		ELSE()
 			# Always set the working directory to bin for every project
 			BW_SET_WORKING_DIRECTORY( ${projname} ${projpath} "$(TargetDir)" )
 		ENDIF()
