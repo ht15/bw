@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.6)
+CMAKE_MINIMUM_REQUIRED( VERSION 3.5 )
 
 set(PY_VERSION_MAJOR 2)
 set(PY_VERSION_MINOR 7)
@@ -13,8 +13,6 @@ endif()
 
 # BW change start
 SET(BW_NO_UNICODE ON)
-INCLUDE( BWStandardProject )
-INCLUDE( BWStandardLibrary )
 SET(BW_NO_UNICODE OFF)
 ADD_DEFINITIONS( -DCOMPILED_FROM_DSP )
 ADD_DEFINITIONS( -DXML_STATIC )
@@ -62,7 +60,7 @@ cmake_dependent_option(USE_LIBEDIT "Use libedit instead of readline" OFF
 option(WITH_TSC "profile with the Pentium timestamp counter" OFF)
 option(ENABLE_IPV6 "Enable IP v6" ON)
 option(WITH_DOC_STRINGS "Enable if you want documentation strings in extension modules" ON)
-option(Py_USING_UNICODE "Enable unicode support" ON)
+option(Py_USING_UNICODE "Enable unicode support" OFF)
 set(Py_DEBUG OFF) # TODO - Build debugging interpreter
 option(WITH_PYMALLOC "Define if you want to compile in Python-specific mallocs" ON)
 option(WITH_THREAD "Compile in rudimentary thread support" ON)
@@ -162,15 +160,18 @@ set(EXTRA_PYTHONPATH "" CACHE STRING
     "A colon (:) separated list of extra paths to add to the PYTHONPATH")
 
 # Configure 'pyconfig.h'
+MESSAGE( STATUS "cur platform: ${UNIX}, BIN_BUILD_DIR: ${BIN_BUILD_DIR}, src_dir: ${SRC_DIR}")
 if(UNIX)
     set(PYCONFIG_BUILD_DIR ${BIN_BUILD_DIR})
     configure_file(cmake/config-unix/pyconfig.h.in
                    ${PYCONFIG_BUILD_DIR}/pyconfig.h)
+#[[
 elseif(WIN32)
     set(PYCONFIG_BUILD_DIR ${SRC_DIR}/PC) # In a windows build tree, 'pyconfig.h' is NOT required to
                                           # live along side the python executable.
                                           # See function '_init_posix()' and '_init_non_posix()'
                                           # in 'Lib/sysconfig.py'
+]]
 endif(UNIX)
 
 # Install 'pyconfig.h'
@@ -179,9 +180,12 @@ endif(UNIX)
 
 # Set include directories
 include_directories(cmake)
-include_directories(${INCLUDE_BUILD_DIR})
 include_directories(${PYCONFIG_BUILD_DIR})
+include_directories(${INCLUDE_BUILD_DIR})
 include_directories(${SRC_DIR}/Python)
+INCLUDE( BWStandardProject )
+INCLUDE( BWStandardLibrary )
+message( STATUS "INCLUDE_BUILD_DIR: ${INCLUDE_BUILD_DIR}, SRC_DIR: ${SRC_DIR}, PYCONFIG_BUILD_DIR: ${PYCONFIG_BUILD_DIR}")
 
 # Set cflags used by all components
 if(UNIX)
@@ -320,3 +324,9 @@ write_basic_package_version_file(
 #)
 
 endif(HAVE_CONFIGURE_PACKAGE_CONFIG_FILE AND HAVE_WRITE_BASIC_PACKAGE_VERSION_FILE)
+
+message("---------------*** python Include directories in order:")
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+foreach(dir ${dirs})
+    message("  ${dir}")
+endforeach()

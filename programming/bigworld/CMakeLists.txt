@@ -4,7 +4,7 @@
 #
 # cmake -DBW_CMAKE_TARGET=client
 # 
-CMAKE_MINIMUM_REQUIRED( VERSION 2.8.12 )
+CMAKE_MINIMUM_REQUIRED( VERSION 3.5 )
 
 # Set the BigWorld source directory
 SET( BW_SOURCE_DIR ${CMAKE_SOURCE_DIR} )
@@ -13,7 +13,6 @@ SET( BW_SOURCE_DIR ${CMAKE_SOURCE_DIR} )
 SET( CMAKE_MODULE_PATH "${BW_SOURCE_DIR}/build/cmake" )
 
 SET( BW_CMAKE_TARGET server )
-SET( CMAKE_CXX_FLAGS "-std=c++11" )
 # Ensure the BW_CMAKE_TARGET has been set
 IF( NOT BW_CMAKE_TARGET )
 	MESSAGE( FATAL_ERROR "BW_CMAKE_TARGET is not set, either configure CMake by running bigworld/src/build/bigworld_cmake.bat or specify BW_CMAKE_TARGET when invoking CMake." )
@@ -31,6 +30,8 @@ ENABLE_LANGUAGE( CXX )
 
 # Ensure we have a functioning compiler. Work around CMake failing to detect
 # that the compiler is unknown, do this by making sure there's some flags
+SET( CMAKE_CXX_FLAGS "-std=c++11" )
+SET( CMAKE_C_FLAGS "-Wall" )
 IF( NOT CMAKE_CXX_FLAGS )
 	MESSAGE( FATAL_ERROR "CMake failed to find a valid compiler!" )
 ENDIF()
@@ -243,9 +244,11 @@ IF( BW_IS_REMOTE_ONLY )
 	# Add a build all option for the server
 	# NOTE: This is not excluded from all or default to allow
 	#    the Visual studio solution to build the server.
+#[[
 	BW_ADD_EXECUTABLE( BUILD_SERVER _NON_EXISTANT_FILE.cpp )
 	SET_SOURCE_FILES_PROPERTIES( _NON_EXISTANT_FILE.cpp PROPERTIES GENERATED TRUE )
 	BW_PROJECT_CATEGORY( BUILD_SERVER "Server Commands" )
+]]
 
 	# Add cleanup of post generation updater
 	STRING( REPLACE "/" "\\" CMAKE_BINARY_DIR_WINDOWS ${CMAKE_BINARY_DIR} )

@@ -168,6 +168,7 @@ else(WIN32)
 endif(WIN32)
 
 # ctypes is different on Windows
+MESSAGE( STATUS "Add ctypes libffi >>>>>>>>>>> 1" )
 if(WIN32)
     if(MINGW)
     add_python_extension(_ctypes
@@ -207,21 +208,22 @@ else(WIN32)
         #                ${SRC_DIR}/Modules/_ctypes/libffi/include
         #)
     else(APPLE)
+        MESSAGE( STATUS "Add ctypes libffi >>>>>>>>>>> 2" )
         add_python_extension(_ctypes
             SOURCES _ctypes/_ctypes.c
                     _ctypes/callbacks.c
                     _ctypes/callproc.c
                     _ctypes/cfield.c
-                    _ctypes/libffi/src/closures.c
+                    _ctypes/libffi_x86/src/closures.o
                     _ctypes/libffi/src/dlmalloc.c
-                    _ctypes/libffi/src/x86/ffi.c
-                    _ctypes/libffi/src/x86/ffi64.c
-                    _ctypes/libffi/src/prep_cif.c
+                    _ctypes/libffi_x86/src/x86/ffi.o
+                    _ctypes/libffi_x86/src/x86/ffi64.o
+                    _ctypes/libffi_x86/src/prep_cif.o
                     _ctypes/stgdict.c
-                    _ctypes/libffi/src/x86/sysv.S
-                    _ctypes/libffi/src/x86/unix64.S
-            INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/x86
-                        ${SRC_DIR}/Modules/_ctypes/libffi/include
+                    _ctypes/libffi_x86/src/x86/sysv.o
+                    _ctypes/libffi_x86/src/x86/unix64.o
+            INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_x86/src/x86
+                        ${SRC_DIR}/Modules/_ctypes/libffi_x86/include
         )
     endif(APPLE)
 endif(WIN32)

@@ -185,6 +185,7 @@ endif(UNIX)
 # builtin modules.
 
 include_directories(${builtin_includedirs})
+message( STATUS ">>>>>>>>>>>>>>>>>---------------builtin_includedirs: ${builtin_includedirs}")
 
 set(config_inits "")
 set(config_entries "")
@@ -200,7 +201,19 @@ configure_file(
 
 
 function(add_libpython name type)
-    add_library(${name} ${type} ${LIBPYTHON_SOURCES} ${builtin_source})
+    list(APPEND LIBPYTHON_SOURCES ${builtin_source})
+    add_library(${name} ${type} ${LIBPYTHON_SOURCES})
+#[[
+    foreach ( builtin_target ${builtin_source})
+        get_filename_component(ext ${builtin_target} EXT)
+        if(${ext} STREQUAL ".o")
+            get_filename_component(Real_Target ${builtin_target} NAME_WE)
+            # Treat assembler sources differently
+            add_dependencies(${name} ${Real_Target} )
+            message( STATUS ">>>>>>>>>>>>>><<<<<<<<<<<<<< ${name} add depend ${Real_Target}")
+        endif (${ext} STREQUAL ".o")
+    endforeach (builtin_target)
+]]
     target_link_libraries(${name}
         ${builtin_link_libraries}
         ${HAVE_LIBDL}
@@ -226,6 +239,7 @@ function(add_libpython name type)
 
     # Export target
     set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS ${name})
+    message( STATUS "${name} add depend run_assembler")
 
     #install(TARGETS ${name} EXPORT PythonTargets
     #    ARCHIVE DESTINATION ${LIBPYTHON_ARCHIVEDIR}

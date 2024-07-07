@@ -3,6 +3,8 @@ INCLUDE_DIRECTORIES( ${BW_SOURCE_DIR}/lib )
 INCLUDE_DIRECTORIES( ${BW_SOURCE_DIR}/third_party )
 INCLUDE_DIRECTORIES( $ENV{DXSDK_DIR}/Include )
 INCLUDE_DIRECTORIES( ${BW_SOURCE_DIR}/third_party/python/Include )
+# 处理pyconfig.h的问题，否则会取到PC/pyconfig.h
+INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR}/bin)
 INCLUDE_DIRECTORIES( ${BW_SOURCE_DIR}/third_party/python/PC )
 
 # Add include directories for remote build system header files
@@ -10,9 +12,11 @@ IF (BW_IS_REMOTE_ONLY AND  NOT ${BW_LINUX_CONN_TYPE} MATCHES "RSYNC" )
 	INCLUDE_DIRECTORIES(BEFORE SYSTEM ${BW_REMOTE_INCLUDE_DIRS} )
 ENDIF()
 
+#[[
 BW_ADD_COMPILE_FLAGS(
 	/fp:fast  # Fast floating point model
 )
+]]
 
 # Arch dependent library directories and definitions
 IF( BW_PLATFORM_WINDOWS AND BW_ARCH_32 ) 

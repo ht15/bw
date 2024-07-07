@@ -12,13 +12,13 @@ macro(add_assembler ADD_ASSEMBLER_OUTPUTVAR ADD_ASSEMBLER_FILE)
     # Build up a list of cflags to pass to gcc.
     # Start with the normal cmake ones.
     set(ADD_ASSEMBLER_CFLAGS ${CMAKE_C_FLAGS})
-    separate_arguments(ADD_ASSEMBLER_CFLAGS)
+    # separate_arguments(ADD_ASSEMBLER_CFLAGS)
 
     # Add -I flags for include directories that are set on this subdirectory.
     # Also take any additional directories passed to this function.
     get_directory_property(ADD_ASSEMBLER_INCLUDE_DIRS INCLUDE_DIRECTORIES)
     foreach(ADD_ASSEMBLER_INCLUDE_DIR ${ADD_ASSEMBLER_INCLUDE_DIRS} ${ARGN})
-        list(APPEND ADD_ASSEMBLER_CFLAGS "-I${ADD_ASSEMBLER_INCLUDE_DIR}")
+        set(ADD_ASSEMBLER_CFLAGS "${ADD_ASSEMBLER_CFLAGS} -I${ADD_ASSEMBLER_INCLUDE_DIR}")
     endforeach(ADD_ASSEMBLER_INCLUDE_DIR)
 
     # Add the command to compile the assembler.
@@ -28,7 +28,23 @@ macro(add_assembler ADD_ASSEMBLER_OUTPUTVAR ADD_ASSEMBLER_FILE)
                 -c ${SRC_DIR}/${ADD_ASSEMBLER_FILE}
                 -o ${ADD_ASSEMBLER_OUTPUT}
         DEPENDS ${SRC_DIR}/${ADD_ASSEMBLER_FILE}
+        VERBATIM
     )
+
+
+#[[
+    set_target_properties(${ADD_ASSEMBLER_NAME_WE}_target PROPERTIES GENERATED ${ADD_ASSEMBLER_OUTPUT})
+]]
+#[[
+    add_custom_target(${ADD_ASSEMBLER_NAME_WE}
+            COMMAND ${CMAKE_C_COMPILER} ${ADD_ASSEMBLER_CFLAGS}
+            -c ${SRC_DIR}/${ADD_ASSEMBLER_FILE}
+            -o ${ADD_ASSEMBLER_OUTPUT}
+            COMMENT "Executing command ${ADD_ASSEMBLER_NAME_WE}"
+            VERBATIM
+    )
+    MESSAGE( STATUS ">>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<< add custom target: ${ADD_ASSEMBLER_NAME_WE}")
+]]
 
     # Link this .o in the target.
     list(APPEND ${ADD_ASSEMBLER_OUTPUTVAR} ${ADD_ASSEMBLER_OUTPUT})
