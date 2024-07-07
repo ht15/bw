@@ -120,7 +120,7 @@ private:
 	 *
 	 *	@param blockSize 	The block size.
 	 */
-	NullCipher( size_t blockSize = 8 ) : 
+	NullCipher( size_t blockSize = 8 ) :
 		BlockCipher(),
 		key_(),
 		blockSize_( blockSize )

@@ -6,6 +6,8 @@
 
 BW_BEGIN_NAMESPACE
 
+namespace Mercury
+{
 
 /*
  *	This version of SymmetricBlockCipher::create is used when OpenSSL support
@@ -15,8 +17,10 @@ BW_BEGIN_NAMESPACE
 BlockCipherPtr SymmetricBlockCipher::create(
 		size_t keySize /* = DEFAULT_KEY_SIZE */ )
 {
-	return new NullCipher();
+	return NullCipher::create();
 }
+
+} // end namespace Mercury
 
 
 BW_END_NAMESPACE
