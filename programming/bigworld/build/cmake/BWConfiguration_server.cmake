@@ -60,8 +60,10 @@ SET( BW_LIBRARY_PROJECTS
 	db_storage			lib/db_storage
 
 	# DBMgr MySQL support
+#[[
 	bwengine_mysql		server/dbapp_extensions/bwengine_mysql
 	db_storage_mysql	lib/db_storage_mysql
+]]
 
 	# DBMgr XML database support
 	bwengine_xml		server/dbapp_extensions/bwengine_xml
